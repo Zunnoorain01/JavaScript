@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Note Pad</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Note Pad</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" id="searchTxt" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+
+
+    <div class="container my-4">
+        <h1 class="text-center">Welcome to Note Pad</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Add a Note</h5>
+                <textarea class="form-control my-4" id="textInput" rows="5"></textarea>
+                <button class="btn btn-primary" id="btnBtn">Add Note</button>
+            </div>
+        </div>
+
+
+        <h1>Your Notes</h1>
+        <hr>
+        <div id="notes" class="row container-fluid">
+
+        </div>
+    </div>
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
+
+
+<script>
+    let addBtn = document.getElementById('btnBtn');
+    showNotes();
+    addBtn.addEventListener("click", (e) => {
+        let addText = document.getElementById("textInput");
+        // console.log(addText);
+        let notes = localStorage.getItem("notes");
+        if (notes == null) {
+            notesObj = [];
+        }
+        else {
+            notesObj = JSON.parse(notes);
+        }
+
+        notesObj.push(addText.value);
+        localStorage.setItem("notes", JSON.stringify(notesObj));
+        addText.value = "";
+        // console.log(notesObj);
+
+        showNotes();
+    })
+
+
+    function showNotes() {
+        let notes = localStorage.getItem("notes");
+        if (notes == null) {
+            notesObj = [];
+        }
+        else {
+            notesObj = JSON.parse(notes);
+        }
+
+
+        let html = " ";
+        notesObj.forEach(function (element, index) {
+            html += `<div class="card mx-4 my-4 noteCard" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Note ${index + 1}</h5>
+                    <p class="card-text">${element}</p>
+                    <button id="${index} "onclick="deleteNote(this.id)" class="btn btn-danger">Delete Note</button>
+                </div>
+            </div>`
+        })
+
+
+
+        let notesElem = document.getElementById("notes");
+        if (notesObj != 0) {
+            notesElem.innerHTML = html;
+        }
+        else {
+            notesElem.innerHTML = `<p>No Notes Found.</p>`;
+        }
+    }
+
+
+    function deleteNote(index) {
+        let notes = localStorage.getItem("notes");
+        if (notes == null) {
+            notesObj = [];
+        }
+        else {
+            notesObj = JSON.parse(notes);
+        }
+
+        notesObj.splice(index,1);
+        localStorage.setItem("notes", JSON.stringify(notesObj));
+        showNotes();
+    }
+
+    
+    
+    searchTxt = document.getElementById("searchTxt");
+    searchTxt.addEventListener("input",function (e) {
+        let inputValue = searchTxt.value.toLowerCase();
+        // console.log(inputValue);
+        let noteCard = document.getElementsByClassName("noteCard");
+        Array.from(noteCard).forEach((element,index)=>{
+            let cardText = element.getElementsByTagName('p')[0].innerText;
+            // console.log(cardText);
+            if(cardText.includes(inputValue)){
+                element.style.display='block';
+            }
+            else{
+                element.style.display='none';
+            }
+        })
+    })
+
+</script>
